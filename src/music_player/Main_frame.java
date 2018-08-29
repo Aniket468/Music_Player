@@ -8,6 +8,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -15,14 +16,17 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javazoom.jl.player.Player;
+import javax.swing.JOptionPane;
+import org.apache.commons.io.FilenameUtils;
+//import javazoom.jl.player.Player;
 
 /**
  *
  * @author Aniket Kumar
  */
 public class Main_frame extends javax.swing.JFrame {
-
+    
+    ArrayList<File> allSongs=new ArrayList<>();
     /**
      * Creates new form Main_frame
      */
@@ -60,6 +64,7 @@ public class Main_frame extends javax.swing.JFrame {
         jPanel7 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -96,15 +101,28 @@ public class Main_frame extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 204, 204));
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 358, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(275, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 435, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jButton1)
+                .addContainerGap(393, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("All Files", jPanel1);
@@ -216,8 +234,8 @@ public class Main_frame extends javax.swing.JFrame {
            chooser.setDialogTitle("Choose Open to load..");
            chooser.showOpenDialog(null);
            fileName=chooser.getSelectedFile();
-           Player player=new Player(new FileInputStream(fileName));
-           player.play();
+//           Player player=new Player(new FileInputStream(fileName));
+//           player.play();
            
         }
         catch(Exception ex)
@@ -225,6 +243,29 @@ public class Main_frame extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_openActionPerformed
+
+    // Button used to select the folder in which music is to be find
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("C:/"));
+        chooser.setDialogTitle("Select Folder");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+          File folder=chooser.getSelectedFile();
+          String folderPath=folder.getPath();
+          System.out.println(""+folderPath);
+          getAllSongs(folderPath);  
+        } else {
+            // this will pop up a dialog box and give alert to the user 
+            // that any folder is not selected.
+          JOptionPane.showMessageDialog(null, "No Folder Selected", "InfoBox: " + "Alert", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -267,6 +308,7 @@ public class Main_frame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -277,5 +319,34 @@ public class Main_frame extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JButton open;
     // End of variables declaration//GEN-END:variables
+
+    private void getAllSongs(String folderPath) {
+        
+        File directory = new File(folderPath);
+        //get all the files from a directory
+        
+        File[] fList = directory.listFiles();
+        for (File file : fList){
+            try{
+            if (file.isFile()){
+                String name=file.getPath();
+                String extension=FilenameUtils.getExtension(name);
+                if(extension.equals("mp3"))
+                {
+                    System.out.println(""+name);
+                    allSongs.add(file);
+                }
+            } else if (file.isDirectory()){
+                getAllSongs(file.getAbsolutePath());
+            }
+            }
+            catch(Exception e)
+            {
+                System.out.println("Ye wala kahrab hai");
+            }
+        }
+    }
+    
+    
  
 }
